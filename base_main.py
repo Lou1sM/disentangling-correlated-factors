@@ -84,7 +84,7 @@ def main(config):
     #rename_method_dict = {'hfs': 'h'}
     #fpath = f'{rename_dset_dict[bad_dset_name]}{rename_method_dict[bad_method_name]}.npz'
     #np.savez(f"{info_dict['write_dir']}/latents.npz",latents=z_array,gts=gt_array)
-    correlations_info = '' if correlations_filepath is None else '_'.join(correlations_filepath.split(':')[1].split('_')[1:])
+    correlations_info = 'independent' if correlations_filepath is None else '_'.join(correlations_filepath.split(':')[1].split('_')[1:])
     fpath =f"3h{correlations_info}.npz"
     while True:
         if not os.path.exists(fpath):
