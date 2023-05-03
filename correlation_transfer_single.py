@@ -19,7 +19,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pickle
 import tqdm
-import wandb
+#import wandb
 
 import datasets
 import dent
@@ -70,7 +70,7 @@ for chkpt_path in opt.chkpt_paths:
     chkpt = torch.load(chkpt_path)
     metadata = chkpt['metadata']
     if 'inv' in opt.target_group:
-        config = utils.insert_config('constraints.correlation_distribution', 'inv_traeuble')    
+        config = utils.insert_config('constraints.correlation_distribution', 'inv_traeuble')
     config = utils.overwrite_config(metadata)
     project = chkpt_path.split('/')[-3]
     project_seed = config['train.seed']
@@ -80,7 +80,7 @@ for chkpt_path in opt.chkpt_paths:
         #Initialize model.
         model = dent.model_select(device, name=config['model.name'], img_size=config['data.img_size'])
         model.load_state_dict(chkpt['model'])
-        _ = model.to(device)    
+        _ = model.to(device)
         _ = model.eval()
 
         constraints_filepath = None
@@ -88,12 +88,12 @@ for chkpt_path in opt.chkpt_paths:
 
         correlated_dataloader, _ = datasets.get_dataloaders(
             dataset=opt.dataset_name,
-            shuffle=True, 
-            device=device, 
+            shuffle=True,
+            device=device,
             batch_size=2048,
-            return_pairs=False, 
+            return_pairs=False,
             root=f'../data/{opt.dataset_name}',
-            k_range=config['data.k_range'], 
+            k_range=config['data.k_range'],
             constraints_filepath=constraints_filepath,
             correlations_filepath=correlations_filepath)
 
@@ -106,8 +106,8 @@ for chkpt_path in opt.chkpt_paths:
                 metric_out['computed_metrics'] = {key: item.item() for key, item in metric_out['computed_metrics'].items()}
                 aggregated_metrics.update({f'full_{key}': item for key, item in metric_out['computed_metrics'].items()})
             if metric_out['computed_instance_metrics']:
-                metric_out['computed_instance_metrics'] = {key: item.item() for key, item in metric_out['computed_instance_metrics'].items()}            
+                metric_out['computed_instance_metrics'] = {key: item.item() for key, item in metric_out['computed_instance_metrics'].items()}
                 aggregated_metrics.update({f'instance_{key}': item for key, item in metric_out['computed_instance_metrics'].items()})
-        aggregated_metrics = {metric_name_convert(key): item for key, item in aggregated_metrics.items()}        
+        aggregated_metrics = {metric_name_convert(key): item for key, item in aggregated_metrics.items()}
 
         pkl.dump(aggregated_metrics, open(savename, 'wb'))

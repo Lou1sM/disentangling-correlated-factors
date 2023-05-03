@@ -14,7 +14,7 @@ import utils
 import os
 
 # hack to set default wandb key if environment variable is set:
-WANDB_DEFAULT_KEY = os.getenv('WANDB_API_KEY', '<your_wandb_key>')
+#WANDB_DEFAULT_KEY = os.getenv('WANDB_API_KEY', '<your_wandb_key>')
 
 #------------ General parameters -------------------------------
 Section('run', 'base run parameters').params(
@@ -29,8 +29,8 @@ Section('run', 'base run parameters').params(
                        'Set to "overwrite" to overwrite folder with same names.',
                        default='continue'),
     restore_with_config=Param(utils.Bool(), 'Flag. If set, will also load full chkpt fastargs config.', default=False),
-    restore_to_new=Param(utils.Bool(), 
-                         'Flag. If set, restores a new training in <restore_from> described by log.project & log.group.', 
+    restore_to_new=Param(utils.Bool(),
+                         'Flag. If set, restores a new training in <restore_from> described by log.project & log.group.',
                          default=False),
     gpu_id=Param(int, 'gpu-id to run on.', default=0))
 
@@ -86,12 +86,12 @@ Section('data', 'all data-related parameters').params(
     name=Param(str, 'dataset name', default='shapes3d'),
     root=Param(str, 'optional root to dataset', default='n/a'),
     k_range=Param(utils.List(), 'number of UNshared factors of variation. k_range = [k_min, k_max]. If k_max = -1 -> k_max = num_factors_of_variation - 1', default=[1,-1]),
-    pair_index=Param(str, 
+    pair_index=Param(str,
                      'Method to select number of shared factors. By default, selects "locatello" - the method'
                      'implemented in https://github.com/google-research/disentanglement_lib/blob/86a644d4ed35c771560dc3360756363d35477357/disentanglement_lib/methods/weak/train_weak_lib.py#L41-L57'
                      'which differs from the purely uniform sampling described in the paper.'
                      'Other options: "uniform", which uniformly samples k, and "uniform_fixed", which'
-                     'uniformly samples k AND ENSURES different FoV values for the unshared entries.', 
+                     'uniformly samples k AND ENSURES different FoV values for the unshared entries.',
                      default='locatello'),
     subset=Param(float, 'optional subset of data for debugging. Uses all by default.', default=1),
     num_workers=Param(int, 'number of workers', default=8))
@@ -109,13 +109,13 @@ Section('log', 'all logging-related hyperparameters').params(
         str,
         'experimental project (groups multiple groups). If "default" uses default naming convention.',
         default='default'),
-    wandb_mode=Param(str, "Denote wandb logging mode.", default='run'),
-    wandb_allow_val_change=Param(utils.Bool(), "Flag - is set, allows config to be overwritten when continuing checkpoints.", default=False),
-    wandb_key=Param(str, "Weights & Biases key.", default=WANDB_DEFAULT_KEY),
-    new_wandb=Param(utils.Bool(), 
-                    'Flag. If set, will not continue from checkpointed W&B logger but new one'
-                    'Currently only relevant for separate evaluation/visualization.', 
-                    default=False),
+    #wandb_mode=Param(str, "Denote wandb logging mode.", default='run'),
+    #wandb_allow_val_change=Param(utils.Bool(), "Flag - is set, allows config to be overwritten when continuing checkpoints.", default=False),
+    #wandb_key=Param(str, "Weights & Biases key.", default=WANDB_DEFAULT_KEY),
+    #new_wandb=Param(utils.Bool(),
+                    #'Flag. If set, will not continue from checkpointed W&B logger but new one'
+                    #'Currently only relevant for separate evaluation/visualization.',
+                    #default=False),
     printlevel=Param(int, "How much information to print. 1: Minimal, 2: All.", default=1))
 
 
@@ -142,10 +142,10 @@ Section('viz', 'external visualization parameters for main_viz').params(
         "posterior traversals. `all` runs every plot.",
         default=['all']),
     nrows=Param(int,
-                '#Rows to visualize if applicable (corresponds to number of latents to visualize)', 
+                '#Rows to visualize if applicable (corresponds to number of latents to visualize)',
                 default=10),
-    ncols=Param(int, 
-                '#Cols to visualize if applicable (corresponds to number of samples to visualize)', 
+    ncols=Param(int,
+                '#Cols to visualize if applicable (corresponds to number of samples to visualize)',
                 default=7),
     reorder_latents_by_kl=Param(utils.Bool(),
                                 'should latents be reordered based on kl',
@@ -218,7 +218,7 @@ Section('annealedvae', 'Burgess annealed beta-VAE parameters').params(
     C_init=Param(float, 'initial annealed capacity.', default=0),
     C_fin=Param(float, 'final annealed capacity.', default=25),
     gamma=Param(float, 'Replaced standard beta to account for annealed capacity.', default=1000),
-    anneal_steps=Param(int, 'reg_anneal', default=100000),    
+    anneal_steps=Param(int, 'reg_anneal', default=100000),
     log_components=Param(
         utils.Bool(),
         'Flag. If set, logs kl-loss for each latent component.',
@@ -231,7 +231,7 @@ Section('factorvae', 'factorVAE parameters').params(
     discr_hidden_units=Param(int, 'number of hidden units/layer', default=1000),
     discr_latent_dim=Param(int, 'input latent dim, usually <latent_dim>.', default=10),
     discr_betas=Param(utils.List(), 'Adam parameters', default=[0.5, 0.9]),
-    anneal_steps=Param(int, 'reg_anneal', default=100000),    
+    anneal_steps=Param(int, 'reg_anneal', default=100000),
     log_components=Param(
         utils.Bool(),
         'Flag. If set, logs kl-loss for each latent component.',
@@ -251,9 +251,9 @@ Section('betatcvae', 'btcVAE parameters').params(
         default=False))
 
 Section('adagvae', 'Adaptive Group-VAE parameters').params(
-    annealing=Param(str, 
+    annealing=Param(str,
                     'Which method to use to anneal the KL-Divergence between posterior and normal prior.'
-                    'Available: higgins, burgess.', 
+                    'Available: higgins, burgess.',
                     default='higgins'),
     thresh_mode=Param(str, 'Adaptive threshold mode: kl, symmetric_kl, dist, sampled_dist', default='symmetric_kl'),
     average_mode=Param(str, 'Type of (shared) posterior averaging: gvae, mlvae', default='gvae'),
@@ -262,8 +262,8 @@ Section('adagvae', 'Adaptive Group-VAE parameters').params(
     C_init=Param(float, 'If annealing==burgess: initial annealed capacity.', default=0),
     C_fin=Param(float, 'If annealing==burgess: final annealed capacity.', default=25),
     sanity_check=Param(utils.Bool(), 'If set, converts AdaGVAE to effectively a beta-VAE for a sanity check.', default=False),
-    gamma=Param(float, 'If annealing==burgess: Replaced standard beta to account for annealed capacity.', default=100),    
-    anneal_steps=Param(int, 'reg_anneal', default=100000),    
+    gamma=Param(float, 'If annealing==burgess: Replaced standard beta to account for annealed capacity.', default=100),
+    anneal_steps=Param(int, 'reg_anneal', default=100000),
     log_components=Param(
         utils.Bool(),
         'Flag. If set, logs kl-loss for each latent component.',
@@ -276,26 +276,26 @@ Section('factorizedsupportvae', 'standard VAE with factorized support constraint
     btc_alpha=Param(float, 'Weight on Mutual Information.', default=1),
     btc_gamma=Param(float, 'Weight on dimension-wise KLD.', default=1),
     btc_beta=Param(float, 'Weight on Total Correlation.', default=6),
-    is_mss=Param(utils.Bool(), 'Flag if minibatch stratified sampling should be used.', default=True),    
+    is_mss=Param(utils.Bool(), 'Flag if minibatch stratified sampling should be used.', default=True),
     reg_mode=Param(str, 'Scale regularizer for support. Available: minimal_support, variance', default='variance'),
     reg_range=Param(utils.List(), 'If reg_mode == minimal_support, this denotes [a, b].', default=[0., 1.]),
     matching=Param(str, 'Matching method to factorized support', default='hausdorff_hard'),
     use_rec=Param(int, 'If 0: Do not use reconstruction (likelihood) objective.', default=1),
     latent_select=Param(str, 'Whether to randomly subsample the full latents into latent pairs or not. Choose from <pair> and <all>.', default='pair'),
     factorized_support_estimation=Param(
-        str, 
+        str,
         'How to compute the distance against the factorized support, computing either the '
-        '<full> factorized support set, or using <random> samples ', 
+        '<full> factorized support set, or using <random> samples ',
         default='full'),
     num_support_estimators=Param(
-        int, 
+        int,
         'If the factorized support is estimated at random, this value will denote the '
-        'number of vectors to draw from the factorized support.', 
+        'number of vectors to draw from the factorized support.',
         default=100),
     num_latent_pairs=Param(
-        int, 
+        int,
         'Number of pairs of latent indices to generate for pairwise matching. '
-        'Will be capped at the total number of latent pairings.', 
+        'Will be capped at the total number of latent pairings.',
         default=25),
     temperature_1=Param(float, 'Softmax temperature for inner operation in Hausdorff approximations', default=1),
     temperature_2=Param(float, 'Softmax temperature for outer operation in Hausdorff approximations', default=1),
@@ -338,7 +338,7 @@ Section('constraints', 'Constrain support of ground truth factors based on condi
     correlations_file=Param(str, 'path to yaml with correlations', default='none'),
     correlation_distribution=Param(str, 'distribution to use to correlate FoVs', default='traeuble'),
     allow_overshoot=Param(
-        utils.Bool(), 
+        utils.Bool(),
         'As holes are sampled iteratively, the number of holes may overshoot the limit indicated.'
         'This only happens when full chunks of samples are removed at once. In this case, if this flag'
         'is set to False or if the maximum allowed overshoot is passed, subsampling is performed'
@@ -346,10 +346,10 @@ Section('constraints', 'Constrain support of ground truth factors based on condi
         'but a handful of samples are still retained.',
         default=True),
     max_overshoot=Param(
-        float, 
+        float,
         'Percentage of limit that can be overshot.'
         'Set to 0.1 by default - i.e. when the percentage of holes is limited to 10, '
-        '10 * 1.1. = 11 are instead allowed when generated by accident.', 
+        '10 * 1.1. = 11 are instead allowed when generated by accident.',
         default=0.1)
 )
 

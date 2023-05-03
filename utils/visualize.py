@@ -430,10 +430,6 @@ def plot_pair_samples(train_loader, write_dir, num_samples=16, log_to_wandb=Fals
     for fcts in pair_fcts:
         pair_smry += f'{[np.round(x, 3) for x in list(fcts.numpy())]}'
         pair_smry += ' | '
-    if log_to_wandb:
-        import wandb        
-        wandb.log({'base_references': wandb.Image(base_grid, caption=base_smry)})
-        wandb.log({'pair_references': wandb.Image(pair_grid, caption=pair_smry)})
     f, axes = plt.subplots(2, 1)
     axes[0].imshow(base_grid.numpy().transpose(1, 2, 0))
     axes[1].imshow(pair_grid.numpy().transpose(1, 2, 0))

@@ -42,7 +42,7 @@ def get_dataset(dataset):
         return datasets.celeba.CelebA
     if dataset == 'chairs':
         import datasets.chairs
-        return datasets.chairs.Chairs        
+        return datasets.chairs.Chairs
     if dataset == 'dsprites':
         import datasets.dsprites
         return datasets.dsprites.DSprites
@@ -83,7 +83,7 @@ def get_background(dataset):
 @param('train.batch_size')
 @param('data.num_workers')
 def get_dataloaders(
-    dataset, shuffle=False, device=torch.device('cuda'), logger=logging.Logger(__name__), root='n/a', 
+    dataset, shuffle=False, device=torch.device('cuda'), logger=logging.Logger(__name__), root='n/a',
     batch_size=256, num_workers=4, return_pairs=False, k_range=[1, -1], constraints_filepath=None,
     correlations_filepath=None):
     """A generic data loader
@@ -126,9 +126,9 @@ def get_dataloaders(
         "no ground truth factors of variation are given."
         assert hasattr(dataset, 'lat_sizes'), assert_str
         dataset = PairedDataset(
-            dataset=dataset, 
+            dataset=dataset,
             k_range=k_range,
-            correlation_weights=correlation_weights)  
+            correlation_weights=correlation_weights)
 
     return torch.utils.data.DataLoader(
         dataset,
@@ -182,7 +182,7 @@ def preprocess(root, size=(64, 64), img_format='JPEG', center_crop=None):
 #------------- CONSTRAINED SETTINGS ---------------
 def compare(comp_vals, constr, op, hash_map):
     if op == '==':
-        return hash_map[constr]        
+        return hash_map[constr]
     if op == '>=':
         return comp_vals >= constr
     if op == '<=':
@@ -200,7 +200,7 @@ def extract_constraint_yaml(constraints_filepath):
     with open(constraints_filepath) as constraint_file:
         yaml_file = yaml.load(constraint_file, Loader=yaml.FullLoader)
         if name is not None:
-            yaml_file = yaml_file[name] 
+            yaml_file = yaml_file[name]
     connect = 'and' if 'connect' not in yaml_file else yaml_file['connect']
     constraints = yaml_file['constraints']
     repeat = ['none'] if 'repeat' not in yaml_file else yaml_file['repeat']
@@ -228,14 +228,14 @@ def compute_constrained_elements(dataset, constraints_filepath, allow_overshoot=
         for unique_lat_val in unique_lat_vals:
             index_hash[i][unique_lat_val] = (dataset.lat_values[..., i] == unique_lat_val).astype(bool)
 
-    #Iterate over every axis and apply constraints   
-    iterm = 0 
+    #Iterate over every axis and apply constraints
+    iterm = 0
     old_count = 0
     not_iterative = False
 
     if repeat[0] != 'none':
         if 'coverage' in repeat[0]:
-            num_samples_to_remove = int(len(dataset.lat_values) * float(repeat[1]))        
+            num_samples_to_remove = int(len(dataset.lat_values) * float(repeat[1]))
         elif repeat[0] == 'count':
             num_samples_to_remove = int(repeat[1])
 
@@ -261,12 +261,12 @@ def compute_constrained_elements(dataset, constraints_filepath, allow_overshoot=
     else:
         not_iterative = True
 
-    while not stop_repeat:   
+    while not stop_repeat:
         commands = ['all', 'random']
         used_commands = []
         already_filtered = []
         base_operations = []
-        to_remove = np.ones(len(dataset)) if connect == 'and' else np.zeros(len(dataset))        
+        to_remove = np.ones(len(dataset)) if connect == 'and' else np.zeros(len(dataset))
         to_remove = to_remove.astype(bool)
 
         #Start by removing factors of variation whos values match defined hard constraints.
@@ -314,7 +314,7 @@ def compute_constrained_elements(dataset, constraints_filepath, allow_overshoot=
                                 constr = np.random.choice(unique_lat_vals)
                         else:
                             constr = constraint[1] if not isinstance(constraint[1], str) else eval(constraint[1])
-                    #If querying for a numerical value which is not in the available FoV values, 
+                    #If querying for a numerical value which is not in the available FoV values,
                     #we search for values within a numerical error of 0.001.
                     #If an exact query is needed ("=="), and no match can be found, an error is thrown.
                     if constr not in unique_lat_vals and not isinstance(constr, str):
@@ -342,10 +342,10 @@ def compute_constrained_elements(dataset, constraints_filepath, allow_overshoot=
                     to_remove = np.logical_or(to_remove, constraint_true)
 
         #For every factor not influenced by hard constraints, apply filtering commands (random/all).
-        additional_operations = []  
-        already_filtered_it = already_filtered[:]        
+        additional_operations = []
+        already_filtered_it = already_filtered[:]
         for command_name, constraint in used_commands:
-            remaining_lats = [x for x in lat_names if x not in already_filtered_it]    
+            remaining_lats = [x for x in lat_names if x not in already_filtered_it]
             if len(remaining_lats) and 'random' in command_name:
                 remaining_lats = [np.random.choice(remaining_lats)]
                 already_filtered_it.extend(remaining_lats)
@@ -376,7 +376,7 @@ def compute_constrained_elements(dataset, constraints_filepath, allow_overshoot=
                     constraint_list = constraint_list[sub_idx]
 
                 constraint_true = np.zeros(len(to_remove))
-                for constraint in constraint_list:                
+                for constraint in constraint_list:
                     if constraint[1] == 'random':
                         constr = np.random.choice(unique_lat_vals)
                     else:
@@ -389,7 +389,7 @@ def compute_constrained_elements(dataset, constraints_filepath, allow_overshoot=
                                 constr = np.random.choice(unique_lat_vals)
                         else:
                             constr = constraint[1] if not isinstance(constraint[1], str) else eval(constraint[1])
-                    #If querying for a numerical value which is not in the available FoV values, 
+                    #If querying for a numerical value which is not in the available FoV values,
                     #we search for values within a numerical error of 0.001.
                     #If an exact query is needed ("=="), and no match can be found, an error is thrown.
                     if constr not in unique_lat_vals and not isinstance(constr, str):
@@ -421,11 +421,11 @@ def compute_constrained_elements(dataset, constraints_filepath, allow_overshoot=
         if 'coverage' in repeat[0]:
             rem_count = np.sum(to_remove)
             if rem_count * 1./len(base_remove) <= float(repeat[1]):
-                base_remove = np.logical_or(base_remove, to_remove)                            
+                base_remove = np.logical_or(base_remove, to_remove)
                 count = np.sum(base_remove)
-                perc = count * 1./len(base_remove)                
+                perc = count * 1./len(base_remove)
                 pbar.update(int(count - old_count))
-                old_count = count                
+                old_count = count
                 if perc >= float(repeat[1]):
                     stop_repeat = True
         elif repeat[0] == 'count':
@@ -433,7 +433,7 @@ def compute_constrained_elements(dataset, constraints_filepath, allow_overshoot=
             if rem_count <= int(repeat[1]):
                 base_remove = np.logical_or(base_remove, to_remove)
                 count = np.sum(base_remove)
-                pbar.update(int(count - old_count))                
+                pbar.update(int(count - old_count))
                 old_count = count
                 if count >= int(repeat[1]):
                     stop_repeat = True
@@ -445,7 +445,7 @@ def compute_constrained_elements(dataset, constraints_filepath, allow_overshoot=
         pbar.close()
 
     if repeat[0] != 'none' and not not_iterative:
-        #Allow up to <max_overshoot>% more samples than indicated via coverage (i.e. 11% instead of 10%) 
+        #Allow up to <max_overshoot>% more samples than indicated via coverage (i.e. 11% instead of 10%)
         #before removing.
         allowed_overshoot = int(num_samples_to_remove * max_overshoot) if allow_overshoot else 0
         num_overshoot = count - num_samples_to_remove
@@ -479,26 +479,26 @@ def constrain(dataset, constraints_filepath):
         Base dataset (e.g. for dsprites or cars3d) to constrain.
     constraints_filepath : str
         path to constraints-yaml that contains the names of FoVs and respective values
-        to be removed from training. 
+        to be removed from training.
         Example constraints.yaml which says that for every objType == 1, remove all entries
         with wallCol > 0.75:
         - shapes3d:
             constraints:
                 objType: ['==', 4/4.]
                 wallCol: ['>', 0.75]
-            connect: and        
+            connect: and
     """
     to_remove, constrain_summary = compute_constrained_elements(
         dataset, constraints_filepath)
     percentage_removed = np.sum(to_remove) * 1. / len(to_remove)
-    to_keep = np.logical_not(to_remove) 
+    to_keep = np.logical_not(to_remove)
     dataset.lat_values = dataset.lat_values[to_keep]
     dataset.imgs = dataset.imgs[to_keep]
     dataset.logger.info(
         f'[Constraints] Removed {int(np.sum(to_remove))}/{len(to_remove)} | {percentage_removed * 100}% of data entries.')
     constrain_summary['removed_idcs'] = to_remove
     return constrain_summary
-    
+
 #------------- CORRELATION SETTINGS ---------------
 def extract_correlations_yaml(correlations_filepath):
     name = None
@@ -507,7 +507,7 @@ def extract_correlations_yaml(correlations_filepath):
     with open(correlations_filepath) as correlation_file:
         yaml_file = yaml.load(correlation_file, Loader=yaml.FullLoader)
         if name is not None:
-            yaml_file = yaml_file[name] 
+            yaml_file = yaml_file[name]
     repeat = ['none'] if 'repeat' not in yaml_file else yaml_file['repeat']
     return yaml_file['correlations'], repeat
 
@@ -515,7 +515,7 @@ def extract_correlations_yaml(correlations_filepath):
 @param('constraints.correlation_distribution')
 def provide_correlation_sampler(dataset, correlations_filepath, correlation_distribution='traeuble'):
     """Provide a sampler for a PyTorch DataLoader which samples from a standard dataset using correlated FoVs (see [1]).
-    
+
     Parameters
     ----------
     dataset : datasets.base.DisentangledDataset
@@ -527,7 +527,7 @@ def provide_correlation_sampler(dataset, correlations_filepath, correlation_dist
 
     Returns
     -------
-    torch.utils.data.WeightedRandomSampler : 
+    torch.utils.data.WeightedRandomSampler :
         Is weighted such that it correctly accounts for pairwise correlations. Inserted into the DataLoader, and
         can thus easily be used with both constrained and weakly supervised training.
 
@@ -543,7 +543,7 @@ def provide_correlation_sampler(dataset, correlations_filepath, correlation_dist
         f_corr = lambda c_1, c_2, sigma: np.exp(-(c_1 - (1 - c_2))**2/(2 * sigma ** 2))
     else:
         raise ValueError(f'No correlation distribution [{correlation_distribution}] available!')
-        
+
     correlations, repeat = extract_correlations_yaml(correlations_filepath)
     correlations = {eval(key):item for key, item in correlations.items()}
 
@@ -600,7 +600,7 @@ def provide_correlation_sampler(dataset, correlations_filepath, correlation_dist
 
     lat_name_to_idx = {lat_name: i for i, lat_name in enumerate(dataset.lat_names)}
     correlations = {tuple(lat_name_to_idx[x] for x in key): item for key, item in correlations.items()}
-    
+
     weights_coll = []
     for (idx_1, idx_2), sigma in correlations.items():
         if sigma != 'none':
@@ -611,7 +611,7 @@ def provide_correlation_sampler(dataset, correlations_filepath, correlation_dist
         # correlation_weights = np.mean(np.stack(weights_coll, axis=1), axis=-1)
     else:
         correlation_weights = np.ones(len(dataset))
-    
+
     return torch.utils.data.WeightedRandomSampler(correlation_weights, len(dataset), replacement=True), correlation_weights
 
 
@@ -628,15 +628,15 @@ class PairedDataset(torch.utils.data.Dataset):
             Base dataset (e.g. for dsprites or cars3d) to convert to a paired variant.
         k_range : List[int]
             Number of UNshared factors of variation, where k_range[0] is the minimal and
-            k_range[1] the maximal number of non-shared factors of variation. If 
+            k_range[1] the maximal number of non-shared factors of variation. If
             k_range[1] = -1, this value goes up to latent_dim - 1, i.e. only sharing a single
             factor of variation.
         pair_index: str
             Denotes the method used to sample the number of unshared FoVs - k.
-            Choose from ["locatello", "uniform", "uniform_fixed"], where the former follows the 
+            Choose from ["locatello", "uniform", "uniform_fixed"], where the former follows the
             implementation in https://github.com/google-research/disentanglement_lib/blob/86a644d4ed35c771560dc3360756363d35477357/disentanglement_lib/methods/weak/train_weak_lib.py#L41-L57
             which differs from the original paper description, going beyond just uniformly sampling k.
-            "uniform" is the same as "locatello", but only uniformly samples k. And finally, 
+            "uniform" is the same as "locatello", but only uniformly samples k. And finally,
             "uniform_fixed" is closest to what it should be based on the paper description: Uniformly sample
             k AND ENSURE that for unshared factors of variation the respective entries are differing.
 
@@ -701,10 +701,10 @@ class PairedDataset(torch.utils.data.Dataset):
         else:
             pair_idx = np.random.choice(int(np.sum(avail_lat_idcs)))
         pair_lat_vals = self.dataset.lat_values[avail_lat_idcs][pair_idx]
-    
+
         # pair_lat_vals = []
         # while tuple(pair_lat_vals) not in self.lats_to_idx:
-        #     pair_lat_vals = []            
+        #     pair_lat_vals = []
         #     for i in range(num_factors_of_v):
         #         if i in shared_factor_idcs:
         #             pair_lat_vals.append(lat_vals[i])
@@ -721,7 +721,7 @@ class PairedDataset(torch.utils.data.Dataset):
         k = np.random.choice(range(self.k_min, self.k_max + 1), 1, replace=False)[0]
         shared_factor_idcs = sorted(np.random.choice(num_factors_of_v, num_factors_of_v - k, replace=False))
         non_shared_factor_idcs = [i for i in range(num_factors_of_v) if i not in shared_factor_idcs]
-       
+
         #Find subset of latent vectors which share factors.
         avail_lat_idcs = np.ones(len(self.dataset.lat_values), dtype=bool)
         for i in shared_factor_idcs:
@@ -740,7 +740,7 @@ class PairedDataset(torch.utils.data.Dataset):
 
         # pair_lat_vals = []
         # while tuple(pair_lat_vals) not in self.lats_to_idx:
-        #     pair_lat_vals = []            
+        #     pair_lat_vals = []
         #     for i in range(num_factors_of_v):
         #         if i in shared_factor_idcs:
         #             pair_lat_vals.append(lat_vals[i])
@@ -758,7 +758,7 @@ class PairedDataset(torch.utils.data.Dataset):
         k = np.random.choice(range(self.k_min, self.k_max + 1), 1, replace=False)[0]
         #Locatello et al. perform a secondary sampling:
         #https://github.com/google-research/disentanglement_lib/blob/86a644d4ed35c771560dc3360756363d35477357/disentanglement_lib/methods/weak/train_weak_lib.py#L41-L57
-        #This significantly increases the chance of receiving pairs with most factors shared!        
+        #This significantly increases the chance of receiving pairs with most factors shared!
         k = np.random.choice([1, k])
         shared_factor_idcs = sorted(np.random.choice(num_factors_of_v, num_factors_of_v - k, replace=False))
 
@@ -783,21 +783,21 @@ class PairedDataset(torch.utils.data.Dataset):
         #         pair_lat_vals.append(lat_vals[i])
         # for i in range(num_factors_of_v):
         #     if i not in shared_factor_idcs:
-        #         if self.correlations is not None:                    
+        #         if self.correlations is not None:
         #             weight_coll = []
         #             for j in range(len(pair_lat_vals)):
         #                 #self.correlations is a dictionary of structure
         #                 #{(idx_of_fov_1, idx_of_fov_2): correlation_strength, ...}
         #                 # Decomposes p(fov_1, fov_2, ..., fov_n) into p(fov_1|fov_2, ..., fov_n) * p(fov_2 | fov_3, ..., fov_n) * p(fov_n)
-        #                 # Where some fov_2 are given due to sharing, i.e. p({fov_i} | {fov_k}) where {fov_i} and {fov_k} denote the set of 
+        #                 # Where some fov_2 are given due to sharing, i.e. p({fov_i} | {fov_k}) where {fov_i} and {fov_k} denote the set of
         #                 # Factors of Variation that are non-shared and shared, respectively.
         #                 sigma = None
         #                 if (i, j) in self.correlations:
         #                     sigma = self.correlations[(i, j)]
         #                 elif (j, i) in self.correlations:
-        #                     sigma = self.correlations[(j, i)]                                
+        #                     sigma = self.correlations[(j, i)]
         #                 if sigma is not None:
-        #                     if pair_lat_vals[j] is not None:                         
+        #                     if pair_lat_vals[j] is not None:
         #                         weight_coll.append(self.f_corr(self.unique_lat_values[i], pair_lat_vals[j], sigma))
         #             if len(weight_coll):
         #                 sampling_weights = np.prod(weight_coll, axis=0)
@@ -812,7 +812,7 @@ class PairedDataset(torch.utils.data.Dataset):
         # #Update remaining ones based on marginals.
         # pair_lat_vals = []
         # while tuple(pair_lat_vals) not in self.lats_to_idx:
-        #     pair_lat_vals = []            
+        #     pair_lat_vals = []
         #     for i in range(num_factors_of_v):
         #         if i in shared_factor_idcs:
         #             pair_lat_vals.append(lat_vals[i])
