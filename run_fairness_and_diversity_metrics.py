@@ -8,7 +8,8 @@ import json
 
 all_results = {}
 for latents_data_dir_name in os.listdir('hfs_results'):
-    correlation_info = latents_data_dir_name[2:].rstrip('.npz')
+    if not os.path.isdir(os.path.join('hfs_results',latents_data_dir_name)): continue
+    correlation_info = latents_data_dir_name[2:]
     print(correlation_info)
     # following naming convention in constraints/avail_correlations.yml
     new_results = {}

@@ -13,10 +13,11 @@ def compute_fairness(latents,gts):
   max_fairness = np.zeros((num_factors, num_factors), dtype=np.float64)
   for i in range(num_factors):
     print(i)
-    sample_size = 100
+    sample_size = 10000
     b = np.concatenate([np.ones(sample_size),np.zeros(gts.shape[0]-sample_size)]).astype(bool)
     np.random.shuffle(b)
-    model = ensemble.GradientBoostingClassifier(n_estimators=10, learning_rate=1.0, max_depth=3)
+    assert sum(b) == sample_size
+    model = ensemble.GradientBoostingClassifier(n_estimators=30, learning_rate=1.0, max_depth=3)
     model.fit(latents[b], gts[b, i])
 
     for j in range(num_factors):
