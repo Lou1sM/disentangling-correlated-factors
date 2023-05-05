@@ -18,7 +18,7 @@ import datasets.base
 class MPI3D(datasets.base.DisentangledDataset):
     """MPI3D Dataset as part of the NeurIPS 2019 Disentanglement Challenge.
 
-    A data-set which consists of over one million images of physical 3D objects with seven factors of variation, 
+    A data-set which consists of over one million images of physical 3D objects with seven factors of variation,
     such as object color, shape, size and position.
 
     Notes
@@ -55,6 +55,7 @@ class MPI3D(datasets.base.DisentangledDataset):
         super().__init__(root, [torchvision.transforms.ToTensor()], **kwargs)
         self.logger.info('Loading MPI3D (~12GB) - this can take some time...')
         data = np.load(self.train_data)
+        self.train_data = '../disentangled_clustering/datasets/mpi3d.npz'
 
         self.imgs = data['images']
         lat_values = []

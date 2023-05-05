@@ -32,6 +32,7 @@ def main(config):
         shuffle=True,
         device=device,
         logger=logger,
+        num_workers=4,
         return_pairs='pairs' in config['train.supervision'],
         root=config['data.root'],
         k_range=config['data.k_range'],
@@ -68,7 +69,6 @@ def main(config):
         raise ValueError(f'No trainer [{config["train.supervision"]}] available!')
 
     trainer.initialize()
-
     trainer(train_loader)
 
     z_list = []
@@ -80,12 +80,13 @@ def main(config):
         gt_list.append(yb.detach().cpu().numpy())
     z_array = np.concatenate(z_list,axis=0)
     gt_array = np.concatenate(gt_list,axis=0)
-    #rename_dset_dict = {'shapes3d': '3'}
+    rename_dset_dict = {'shapes3d': '3','mpi3d_real':'m','celeba':'c'}
+    dset_name = rename_dset_dict[config['data.name']]
     #rename_method_dict = {'hfs': 'h'}
     #fpath = f'{rename_dset_dict[bad_dset_name]}{rename_method_dict[bad_method_name]}.npz'
     #np.savez(f"{info_dict['write_dir']}/latents.npz",latents=z_array,gts=gt_array)
     correlations_info = 'independent' if correlations_filepath is None else '_'.join(correlations_filepath.split(':')[1].split('_')[1:])
-    fpath =f"3h{correlations_info}.npz"
+    fpath =f"{dset_name}h{correlations_info}.npz"
     while True:
         if not os.path.exists(fpath):
             print(f'saving to {fpath}')
