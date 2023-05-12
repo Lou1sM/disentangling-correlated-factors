@@ -82,11 +82,19 @@ def main(config):
     gt_array = np.concatenate(gt_list,axis=0)
     rename_dset_dict = {'shapes3d': '3','mpi3d_real':'m','celeba':'c'}
     dset_name = rename_dset_dict[config['data.name']]
-    #rename_method_dict = {'hfs': 'h'}
+    rename_method_dict = {'factorizedsupportvae': 'h','betatcvae':'t','betavae':'b','factorvae':'f'}
+    method_name = rename_method_dict[config['train.loss']]
+    if method_name == 'h':
+        try:
+            maybe_beta = config['factorizedsupportvae.beta']
+            method_name += f'b{maybe_beta}'
+        except:
+            breakpoint()
+
     #fpath = f'{rename_dset_dict[bad_dset_name]}{rename_method_dict[bad_method_name]}.npz'
     #np.savez(f"{info_dict['write_dir']}/latents.npz",latents=z_array,gts=gt_array)
     correlations_info = 'independent' if correlations_filepath is None else '_'.join(correlations_filepath.split(':')[1].split('_')[1:])
-    fpath =f"{dset_name}h{correlations_info}.npz"
+    fpath =f"saved_latents/{dset_name}{method_name}{correlations_info}.npz"
     while True:
         if not os.path.exists(fpath):
             print(f'saving to {fpath}')
