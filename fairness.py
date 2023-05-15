@@ -12,7 +12,6 @@ def compute_fairness(latents,gts):
   mean_fairness = np.zeros((num_factors, num_factors), dtype=np.float64)
   max_fairness = np.zeros((num_factors, num_factors), dtype=np.float64)
   for i in range(num_factors):
-    print(i)
     sample_size = min(10000,len(gts))
     b = np.concatenate([np.ones(sample_size),np.zeros(gts.shape[0]-sample_size)]).astype(bool)
     np.random.shuffle(b)
