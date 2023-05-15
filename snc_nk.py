@@ -17,7 +17,8 @@ def normalize(x):
 
 def cond_ent_for_alignment(x,y):
     num_classes = get_num_labels(y)
-    dividers_idx = np.arange(0,len(x),len(x)/num_classes).astype(int)
+    #dividers_idx = np.arange(0,len(x),len(x)/num_classes).astype(int)
+    dividers_idx = np.linspace(0,len(x) - len(x)/num_classes,num_classes).astype(int)
     bin_dividers = np.sort(x)[dividers_idx]
     bin_vals = sum([x<bd for bd in bin_dividers])
     total_ent = 0
