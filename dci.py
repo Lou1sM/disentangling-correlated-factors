@@ -26,7 +26,6 @@ def compute_importance_gbt(x_train, y_train, x_test, y_test):
     train_loss = []
     test_loss = []
     for i in range(num_factors):
-        print(i)
         model = ensemble.GradientBoostingClassifier(n_estimators=3,n_iter_no_change=1,subsample=0.01,min_samples_leaf=40)
         #model = ensemble.HistGradientBoostingClassifier(max_iter=5)
         model.fit(x_train.T, y_train[i, :])
